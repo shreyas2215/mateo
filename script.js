@@ -43,6 +43,12 @@ function onPlayerReady(event) {
 const canvas = document.getElementById('fidget-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
+let mouse = { x: null, y: null };
+
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -63,6 +69,22 @@ class Particle {
     }
 
     update() {
+        // Repel logic
+        if (mouse.x !== null && mouse.y !== null) {
+            let dx = this.x - mouse.x;
+            let dy = this.y - mouse.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let forceRadius = 150;
+
+            if (distance < forceRadius) {
+                let force = (forceRadius - distance) / forceRadius;
+                let directionX = dx / distance;
+                let directionY = dy / distance;
+                this.x += directionX * force * 5; // Repel strength
+                this.y += directionY * force * 5;
+            }
+        }
+
         this.x += this.speedX;
         this.y += this.speedY;
 
